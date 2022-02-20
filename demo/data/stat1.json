@@ -1,0 +1,11 @@
+{   
+    "scanned":3531,
+    "actions":{
+        "reject":718,
+        "soft reject":0,
+        "rewrite subject":100,
+        "add header":860,
+        "greylist":103,
+        "no action":1850
+   }
+}

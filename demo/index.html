@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>D3Pie demo</title>
+
+    <link rel="stylesheet" type="text/css" href="../d3pie.css" />
+    <link rel="stylesheet" type="text/css" href="demo.css" />
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="lib/visibility.min.js"></script>
+    <script src="../d3pie.js"></script>
+</head>
+
+<body>
+
+    <div id="main">
+        <h1>D3Pie demo</h1>
+
+        <div class="row">
+            <div class="block" id="left"></div>
+            <div class="block" id="right"></div>
+        </div>
+
+        <div>
+            <form autocomplete="off">
+                Auto:
+                <label class="switch">
+                    <input type="checkbox" id="auto" checked>
+                    <span class="slider round"></span>
+                </label>
+
+                Update chart dataset:
+                <select onchange="getJSON(value)">
+                    <option value="data/no_data.json">no data</option>
+                    <option value="data/stat1.json" selected>stat1</option>
+                    <option value="data/stat2.json">stat2</option>
+                    <option value="data/stat3.json">stat3</option>
+                    <option value="data/stat4.json">stat4</option>
+                    <option value="data/stat5.json">stat5</option>
+                    <option value="data/stat6.json">stat6</option>
+                    <option value="data/stat7.json">stat7</option>
+                    <option value="data/stat8.json">stat8</option>
+                </select>
+
+                Colors:
+                <select id="color">
+                    <option value="dataset" selected>Dataset</option>
+                    <option value="default">Default</option>
+                </select>
+
+                <input type="button" value="Destroy chart" onclick="destroy();" />
+                <input type="button" value="Create new chart using default options" onclick="create();" />
+            </form>
+        </div>
+    </div>
+
+<script>
+/* global D3Pie:false, Visibility:false */
+(function () {
+    "use strict";
+
+    const actions = ["no action", "soft reject", "add header", "rewrite subject", "greylist", "reject"];
+
+    const chartConfig = {
+        left: {duration: 5000, title: "Rspamd filter stats"},
+        right: {
+            cornerRadius: 2,
+            duration: 5000,
+            size: {
+                canvasWidth: 400,
+                canvasHeight: 180,
+                pieInnerRadius: "20%",
+                pieOuterRadius: "80%"
+            },
+            labels: {
+                outer: {
+                    format: "none"
+                },
+                inner: {
+                    hideWhenLessThanPercentage: 10
+                }
+            },
+            padAngle: 0.02,
+            pieCenterOffset: {
+                x: -120,
+                y: 10
+            }
+        }
+    };
+
+    const chartLegend = [
+        {label: "reject", color: "#FF0000"},
+        {label: "soft reject", color: "#BF8040"},
+        {label: "rewrite subject", color: "#FF6600"},
+        {label: "add header", color: "#FFAD00"},
+        {label: "greylist", color: "#436EEE"},
+        {label: "no action", color: "#66CC00"}
+    ];
+
+
+    const graphs = {};
+
+    function getChart (id, json, config) {
+        if (!graphs[id]) graphs[id] = new D3Pie(id, config);
+
+        const data = [];
+        // Controller doesn't return the 'actions' object until at least one message is scanned
+        if (json.scanned) {
+            actions.forEach(function (action) {
+                const datum = {
+                    label: action,
+                    value: json.actions[action]
+                };
+                if ($("#color").val() === "dataset") {
+                    datum.color = chartLegend.find(function (item) { return item.label === action; }).color;
+                }
+                data.push(datum);
+            });
+        }
+        graphs[id].data(data);
+    }
+
+    window.getJSON = function (uri) {
+        $.ajax({
+            dataType: "json",
+            // Override the mime type as "text/xml" is implied for a local file
+            mimeType: "application/json",
+            url: uri
+        })
+            .done(function (json) {
+                getChart("left", json, chartConfig.left);
+                getChart("right", json, chartConfig.right);
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                // eslint-disable-next-line no-console
+                console.warn(uri + " query " + textStatus + ": " + errorThrown);
+            });
+    };
+    window.getJSON("data/stat1.json");
+
+    function random () {
+        const json = {
+            scanned: 0,
+            actions: {}
+        };
+        actions.forEach(function (action) {
+            if (Math.random() < 0.2) return;
+            const value = Math.floor(Math.random() *  1000);
+            json.actions[action] = value;
+            json.scanned += value;
+        });
+        return json;
+    }
+
+    function auto () {
+        return Visibility.every(6000, function () {
+            getChart("left", random(), chartConfig.left);
+            getChart("right", random(), chartConfig.right);
+        });
+    }
+
+    let timerId = auto();
+    $("#auto").click(function () {
+        if ($(this).is(":checked")) { // eslint-disable-line no-invalid-this
+            random();
+            timerId = auto();
+        } else {
+            Visibility.stop(timerId);
+        }
+    });
+
+    window.destroy = function () {
+        graphs.left.destroy();
+        graphs.right.destroy();
+    };
+
+    window.create = function () {
+        graphs.left.destroy();
+        graphs.right.destroy();
+        graphs.left = new D3Pie("left");
+        graphs.right = new D3Pie("right");
+    };
+}());
+</script>
+
+</body>
+
+</html>

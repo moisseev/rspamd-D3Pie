@@ -21,6 +21,7 @@
 
         <div class="row">
             <div class="block" id="left"></div>
+            <div class="block" id="center"></div>
             <div class="block" id="right"></div>
         </div>
 
@@ -66,6 +67,13 @@
 
     const chartConfig = {
         left: {duration: 5000, title: "Rspamd filter stats"},
+        center: {
+            duration: 5000,
+            title: "Rspamd filter stats",
+            size: {
+                pieInnerRadius: "60%"
+            }
+        },
         right: {
             cornerRadius: 2,
             duration: 5000,
@@ -132,6 +140,7 @@
         })
             .done(function (json) {
                 getChart("left", json, chartConfig.left);
+                getChart("center", json, chartConfig.center);
                 getChart("right", json, chartConfig.right);
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
@@ -158,6 +167,7 @@
     function auto () {
         return Visibility.every(6000, function () {
             getChart("left", random(), chartConfig.left);
+            getChart("center", random(), chartConfig.center);
             getChart("right", random(), chartConfig.right);
         });
     }
@@ -174,13 +184,16 @@
 
     window.destroy = function () {
         graphs.left.destroy();
+        graphs.center.destroy();
         graphs.right.destroy();
     };
 
     window.create = function () {
         graphs.left.destroy();
+        graphs.center.destroy();
         graphs.right.destroy();
         graphs.left = new D3Pie("left");
+        graphs.center = new D3Pie("center");
         graphs.right = new D3Pie("right");
     };
 }());

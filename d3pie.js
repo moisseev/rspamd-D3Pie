@@ -235,7 +235,7 @@ function D3Pie (id, options) {
 
         const sliceGEnter = sliceG.enter().append("g")
             .attr("class", "slice-g")
-            .on("mouseover", function (d) {
+            .on("mouseover", function (_, d) {
                 const tot = tooltip.datum().total;
                 const percentage = (tot) ? Math.round(100 * d.data.value / tot) : NaN;
                 if (d.data.value) {
@@ -253,8 +253,8 @@ function D3Pie (id, options) {
             .on("mouseout", function () {
                 tooltip.transition().duration(300).style("opacity", 0);
             })
-            .on("mousemove", function () {
-                const {pageX, pageY} = d3.event;
+            .on("mousemove", (event) => {
+                const {pageX, pageY} = event;
                 tooltip
                     .style("left", (pageX) + "px")
                     .style("top", function (d) { return (pageY - d.height - 2) + "px"; });

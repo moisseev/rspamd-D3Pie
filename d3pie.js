@@ -1,5 +1,5 @@
 /*!
- * rspamd-D3Pie 1.0.0 (https://github.com/moisseev/rspamd-D3Pie)
+ * rspamd-D3Pie 1.1.0 (https://github.com/moisseev/rspamd-D3Pie)
  * Copyright (c) 2022, Alexander Moisseev, BSD 2-Clause
  */
 

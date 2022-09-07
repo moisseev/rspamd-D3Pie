@@ -71,7 +71,16 @@
             duration: 5000,
             title: "Rspamd filter stats",
             size: {
-                pieInnerRadius: "60%"
+                pieInnerRadius: "50%"
+            },
+            total: {
+                enabled: true,
+                label: "Scanned"
+            },
+            labels: {
+                inner: {
+                    offset: 0
+                }
             }
         },
         right: {
@@ -80,15 +89,19 @@
             size: {
                 canvasWidth: 400,
                 canvasHeight: 180,
-                pieInnerRadius: "20%",
+                pieInnerRadius: "50%",
                 pieOuterRadius: "80%"
+            },
+            total: {
+                enabled: true
             },
             labels: {
                 outer: {
                     format: "none"
                 },
                 inner: {
-                    hideWhenLessThanPercentage: 10
+                    hideWhenLessThanPercentage: 10,
+                    offset: 0
                 }
             },
             padAngle: 0.02,

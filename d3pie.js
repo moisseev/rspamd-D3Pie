@@ -38,7 +38,10 @@ function D3Pie (id, options) {
             pieInnerRadius: "20%",
             pieOuterRadius: "85%"
         },
-        title: ""
+        title: "",
+        total: {
+            enabled: false
+        }
     }, options);
 
     this.destroy = function () {
@@ -100,6 +103,51 @@ function D3Pie (id, options) {
         .append("span")
         .attr("id", id + "-tooltip-text");
 
+    function attachListeners (selection) {
+        selection
+            .on("mouseover", function (_, d) {
+                const tot = tooltip.datum().total;
+                const percentage = (tot) ? Math.round(100 * d.data.value / tot) : NaN;
+                if (d.data.value) {
+                    tooltip
+                        .transition().duration(300)
+                        .style("opacity", 1);
+                    tooltipText
+                        .text(d.data.label + ((tot) ? ": " + d.data.value + " (" + percentage + "%)" : ""));
+                } else {
+                    tooltip.transition().duration(300).style("opacity", 0);
+                }
+                // eslint-disable-next-line no-invalid-this
+                tooltip.each(function (datum) { datum.height = this.getBoundingClientRect().height; });
+            })
+            .on("mouseout", function () {
+                tooltip.transition().duration(300).style("opacity", 0);
+            })
+            .on("mousemove", (event) => {
+                const {pageX, pageY} = event;
+                tooltip
+                    .style("left", (pageX) + "px")
+                    .style("top", function (d) { return (pageY - d.height - 2) + "px"; });
+            });
+    }
+
+    const totalG = g.append("g");
+    attachListeners(totalG);
+    totalG.append("circle")
+        .attr("r", innerRadius)
+        .style("opacity", 0);
+    if (opts.total.enabled) {
+        const totalText = totalG.append("text")
+            .attr("class", "total-text");
+        totalText.append("tspan")
+            .attr("class", "total-value")
+            .style("font-size", (0.6 * innerRadius) + "px");
+        totalText.append("tspan")
+            .attr("x", "0")
+            .attr("dy", 0.5 * innerRadius)
+            .text((typeof opts.total.label !== "undefined") ? opts.total.label : "Total");
+    }
+
     const defs = svg.append("defs");
 
     this.data = function (arg) {
@@ -111,6 +159,13 @@ function D3Pie (id, options) {
             return a + (b.value || 0);
         }, 0);
         tooltip.datum({total});
+        totalG.datum({
+            data: {
+                label: (typeof opts.total.label !== "undefined") ? opts.total.label : "Total",
+                value: total
+            }
+        });
+        if (opts.total.enabled) totalG.select(".total-value").text(d3.format(".3~s")(total));
 
         // Add placeholder path for empty pie chart
         data.unshift({
@@ -234,31 +289,8 @@ function D3Pie (id, options) {
         const sliceG = g.selectAll(".slice-g").data(pie(data), key);
 
         const sliceGEnter = sliceG.enter().append("g")
-            .attr("class", "slice-g")
-            .on("mouseover", function (_, d) {
-                const tot = tooltip.datum().total;
-                const percentage = (tot) ? Math.round(100 * d.data.value / tot) : NaN;
-                if (d.data.value) {
-                    tooltip
-                        .transition().duration(300)
-                        .style("opacity", 1);
-                    tooltipText
-                        .text(d.data.label + ((tot) ? ": " + d.data.value + " (" + percentage + "%)" : ""));
-                } else {
-                    tooltip.transition().duration(300).style("opacity", 0);
-                }
-                // eslint-disable-next-line no-invalid-this
-                tooltip.each(function (datum) { datum.height = this.getBoundingClientRect().height; });
-            })
-            .on("mouseout", function () {
-                tooltip.transition().duration(300).style("opacity", 0);
-            })
-            .on("mousemove", (event) => {
-                const {pageX, pageY} = event;
-                tooltip
-                    .style("left", (pageX) + "px")
-                    .style("top", function (d) { return (pageY - d.height - 2) + "px"; });
-            });
+            .attr("class", "slice-g");
+        attachListeners(sliceGEnter);
 
         sliceGEnter
             .append("path")

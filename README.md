@@ -71,7 +71,10 @@ Default settings:
         pieInnerRadius: "20%",
         pieOuterRadius: "85%"
     },
-    title: ""
+    title: "",
+    total: {
+        enabled: false
+    }
 }
 ```
 
@@ -99,6 +102,9 @@ size.canvasWidth | `number` | 600 | Width of the chart in pixels.
 size.pieOuterRadius | `string`, `number` | 85% | Outer radius of the pie. Can be specified as a percentage of available space (a string like "50%") or a pixel value (a number like 200).
 size.pieInnerRadius | `string`, `number` | 20% | Inner radius of the pie. Can be specified as a percentage of the outer radius (a string like "50%") or a pixel value (a number like 200).
 **title**       | `string` | empty | Title of the chart.
+**total** | `hash` | | The `total` hash object.
+total.enabled | `boolean` | true | Put the total value in the center of the chart. 
+total.label | `string` | Total | Total label.
 
 ### Methods
 Method | Default | Description

@@ -335,6 +335,12 @@ function D3Pie (id, options) {
                         outerLabel[d.data.label].currentAngle = outerLabel[d.data.label].newAngle;
                     }
                 }
+
+                // Ensure exactly one element has the 'first-slice' class:
+                // remove from all, then set on the first .slice-g in DOM order.
+                g.selectAll(".slice-g").classed("first-slice", false);
+                const firstSlice = g.select(".slice-g");
+                if (!firstSlice.empty()) firstSlice.classed("first-slice", true);
             })
             .catch(function (error) { console.warn(error); });  // eslint-disable-line no-console
 

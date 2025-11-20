@@ -4,7 +4,6 @@
  */
 
 /* exported D3Pie */
-/* eslint-disable-next-line max-statements, no-implicit-globals */
 function D3Pie (id, options) {
     "use strict";
 

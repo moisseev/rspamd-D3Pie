@@ -1,4 +1,7 @@
 {
+    "scripts": {
+        "build": "npx terser d3pie.js --compress --mangle --comments /^!/ -o d3pie.min.js"
+    },
     "eslintIgnore": [
         "**/*.min.js"
     ],

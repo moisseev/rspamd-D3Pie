@@ -423,7 +423,11 @@ function D3Pie (id, options) {
                 const firstSlice = g.select(".slice-g");
                 if (!firstSlice.empty()) firstSlice.classed("first-slice", true);
             })
-            .catch(function (error) { console.warn(error); });  // eslint-disable-line no-console
+            .catch((error) => {
+                // Interrupted transitions have data/index properties - ignore them, log real errors
+                if (error && typeof error === "object" && "data" in error && "index" in error) return;
+                console.error("D3Pie error:", error);  // eslint-disable-line no-console
+            });
 
 
         sliceGEnter.append("text")

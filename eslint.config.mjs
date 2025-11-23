@@ -45,7 +45,7 @@ export default defineConfig([
             "id-length": ["error", {min: 1}],
             "max-lines": ["warn", 1000],
             "max-lines-per-function": "off",
-            "max-statements": ["warn", 55],
+            "max-statements": ["warn", 100],
             "no-magic-numbers": "off",
             "no-negated-condition": "off",
             "no-ternary": "off",

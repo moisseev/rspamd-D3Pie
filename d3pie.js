@@ -7,6 +7,14 @@
 function D3Pie (id, options) {
     "use strict";
 
+    // Validate ID to prevent CSS selector issues
+    if (typeof id !== "string" || id.length === 0) throw new Error("D3Pie: id must be a non-empty string");
+    if ((/[\s.:#[\]()~>+,]/u).test(id)) {
+        throw new Error("D3Pie: id contains characters that are invalid in CSS selectors. " +
+            "Please use only alphanumeric characters, hyphens (-), and underscores (_). " +
+            "Got: \"" + id + "\"");
+    }
+
     const opts = $.extend(true, {
         canvasPadding: 5,
         cornerRadius: 3,

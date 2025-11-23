@@ -378,7 +378,14 @@ function D3Pie (id, options) {
 
         sliceG
             .exit()
-            .each(function (d, i) { data[i] = {value: 0, label: d.data.label}; });
+            .each(function (d) {
+                // Find by label instead of using exit selection index to avoid array corruption
+                const dataIndex = data.findIndex(function (item) { return item.label === d.data.label; });
+                // If not found, element was already removed from data - skip it
+                if (dataIndex !== -1) {
+                    data[dataIndex] = {value: 0, label: d.data.label};
+                }
+            });
 
         pie(data).forEach(function (d, i) {
             if (typeof currentData[d.data.label] === "undefined") {

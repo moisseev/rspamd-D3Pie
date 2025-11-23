@@ -43,6 +43,46 @@ function D3Pie (id, options) {
         }
     }, options);
 
+    // Validate numeric options to prevent calculation errors
+    const errors = [];
+
+    function validate (path, constraints) {
+        const keys = path.split(".");
+        let value = opts;
+        for (const key of keys) {
+            value = value[key];
+        }
+
+        const num = parseFloat(value);
+        if (!isFinite(num)) {
+            errors.push(path + " must be a finite number, got: " + value);
+            return;
+        }
+        if (typeof constraints.min !== "undefined" && num < constraints.min) {
+            errors.push(path + " must be >= " + constraints.min + ", got: " + num);
+            return;
+        }
+        if (typeof constraints.max !== "undefined" && num > constraints.max) {
+            errors.push(path + " must be <= " + constraints.max + ", got: " + num);
+        }
+    }
+
+    validate("canvasPadding", {min: 0});
+    validate("cornerRadius", {min: 0});
+    validate("duration", {min: 0});
+    validate("gradient.percentage", {min: 0, max: 100});
+    validate("labels.inner.hideWhenLessThanPercentage", {min: 0, max: 100});
+    validate("labels.inner.offset", {min: -1, max: 1});
+    validate("labels.outer.collideHeight", {min: 1});
+    validate("labels.outer.pieDistance", {min: 0});
+    validate("padAngle", {min: 0, max: 2 * Math.PI});
+    validate("pieCenterOffset.x", {});
+    validate("pieCenterOffset.y", {});
+    validate("size.canvasHeight", {min: 50});
+    validate("size.canvasWidth", {min: 50});
+
+    if (errors.length > 0) throw new Error("D3Pie configuration errors:\n  - " + errors.join("\n  - "));
+
     this.destroy = function () {
         // Remove all event listeners before removing elements
         d3.select("#" + id).selectAll("*")
@@ -99,6 +139,25 @@ function D3Pie (id, options) {
     }());
 
     const labelRadius = outerRadius + opts.labels.outer.pieDistance;
+
+    // Validate padAngle doesn't cause visual artifacts with cornerRadius in donut charts
+    if (innerRadius > 0 && opts.padAngle > 0 && opts.cornerRadius > 0) {
+        const ringThickness = outerRadius - innerRadius;
+        // Worst case: 2 slices (50% each, maximum padding effect per slice)
+        // When padAngle is large, corners can extend into the donut hole
+        // Approximate safe limit: padAngle * innerRadius + cornerRadius < ringThickness
+        const effectivePadding = opts.padAngle * innerRadius + opts.cornerRadius;
+        if (effectivePadding > ringThickness) {
+            const maxSafePadAngle = Math.max(0, (ringThickness - opts.cornerRadius) / innerRadius);
+            const warnMsg = "D3Pie: Large padAngle (" + opts.padAngle.toFixed(3) +
+                ") combined with cornerRadius (" + opts.cornerRadius +
+                ") may cause visual artifacts in donut charts. " +
+                "Consider reducing padAngle to <= " + maxSafePadAngle.toFixed(3) +
+                " or reducing cornerRadius.";
+            // eslint-disable-next-line no-console
+            console.warn(warnMsg);
+        }
+    }
 
     const lineGenerator = d3.line()
         .curve(d3.curveCatmullRomOpen);

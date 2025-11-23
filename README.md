@@ -115,31 +115,33 @@ Default settings:
 
 Options details:
 
-Option | Type | Default | Description
----| --- | --- | ---
-**canvasPadding** | `number` | 5 | Padding of the `svg` container in pixels.
-**cornerRadius** | `number` | 3 | Corner radius of a slice.
-**duration**    | `number` | 1250 | Transition effects duration in milliseconds.
-**gradient**      | `hash` || The `gradient` hash object.
-gradient.enabled | `boolean` | true | Add a gradient effect to the pie chart segments. 
-gradient.percentage | `number` | 100 |
-**labels**     | `hash` | | The `labels` hash object.
-labels.inner.hideWhenLessThanPercentage | `number` | 4 | Hide the inner label when the percentage is less than a certain amount. If set to `null`, never hide the labels. 
-labels.inner.offset | `number` | 0.15 | Offset of the inner labels from the center mass of the segment. The value is specified as a fraction of the distance between an arc and the segment center. Positive - to the outer arc, negative - to the inner arc.
-labels.outer.collideHeight | `number` | 13 | Pixel height. Used by a collision detection, that prevents outer labels from overlapping.
-labels.outer.format | `string` | label | `none` - hide outer labels, `label` - show segment labels. 
-labels.outer.pieDistance | `number` | 30 | The distance in pixels from the outside of the pie to the outer label. This also governs the length of the label links.
-**padAngle** | `number` | 0.01 | Angle of the pad between adjacent slices.
-**pieCenterOffset** | `hash` | see description | Fine-tune the position of the pie chart on the canvas. The default is `{x: 0, y: 0}`
-**size**        | `hash` | | The pie `size` hash object.
-size.canvasHeight | `number` | 400 | Height of the chart in pixels.
-size.canvasWidth | `number` | 600 | Width of the chart in pixels.
-size.pieOuterRadius | `string`, `number` | 85% | Outer radius of the pie. Can be specified as a percentage of available space (a string like "50%") or a pixel value (a number like 200).
-size.pieInnerRadius | `string`, `number` | 20% | Inner radius of the pie. Can be specified as a percentage of the outer radius (a string like "50%") or a pixel value (a number like 200).
-**title**       | `string` | empty | Title of the chart.
-**total** | `hash` | | The `total` hash object.
-total.enabled | `boolean` | true | Put the total value in the center of the chart. 
-total.label | `string` | Total | Total label.
+Option | Type | Default | Valid Range | Description
+---| --- | --- | --- | ---
+**canvasPadding** | `number` | 5 | ≥ 0 | Padding of the `svg` container in pixels.
+**cornerRadius** | `number` | 3 | ≥ 0 | Corner radius of a slice. Large values combined with large `padAngle` may cause visual artifacts in donut charts.
+**duration**    | `number` | 1250 | ≥ 0 | Transition effects duration in milliseconds.
+**gradient**      | `hash` | | | The `gradient` hash object.
+gradient.enabled | `boolean` | true | | Add a gradient effect to the pie chart segments. 
+gradient.percentage | `number` | 100 | 0-100 | Gradient stop offset percentage.
+**labels**     | `hash` | | | The `labels` hash object.
+labels.inner.hideWhenLessThanPercentage | `number` | 4 | 0-100 | Hide the inner label when the percentage is less than a certain amount. If set to `null`, never hide the labels. 
+labels.inner.offset | `number` | 0.15 | -1 to 1 | Offset of the inner labels from the center mass of the segment. The value is specified as a fraction of the distance between an arc and the segment center. Positive - to the outer arc, negative - to the inner arc.
+labels.outer.collideHeight | `number` | 13 | ≥ 1 | Pixel height. Used by a collision detection, that prevents outer labels from overlapping.
+labels.outer.format | `string` | label | | `none` - hide outer labels, `label` - show segment labels. 
+labels.outer.pieDistance | `number` | 30 | ≥ 0 | The distance in pixels from the outside of the pie to the outer label. This also governs the length of the label links.
+**padAngle** | `number` | 0.01 | 0 to 2π | Angle of the pad between adjacent slices in radians. Large values combined with `cornerRadius` may cause visual artifacts in donut charts (a warning will be displayed).
+**pieCenterOffset** | `hash` | see description | | Fine-tune the position of the pie chart on the canvas. The default is `{x: 0, y: 0}`
+pieCenterOffset.x | `number` | 0 | any | Horizontal offset in pixels.
+pieCenterOffset.y | `number` | 0 | any | Vertical offset in pixels.
+**size**        | `hash` | | | The pie `size` hash object.
+size.canvasHeight | `number` | 400 | ≥ 50 | Height of the chart in pixels.
+size.canvasWidth | `number` | 600 | ≥ 50 | Width of the chart in pixels.
+size.pieOuterRadius | `string`, `number` | 85% | 0-99% or ≥ 0 | Outer radius of the pie. Can be specified as a percentage of available space (a string like "50%") or a pixel value (a number like 200).
+size.pieInnerRadius | `string`, `number` | 20% | 0-99% or ≥ 0 | Inner radius of the pie. Can be specified as a percentage of the outer radius (a string like "50%") or a pixel value (a number like 200).
+**title**       | `string` | empty | | Title of the chart.
+**total** | `hash` | | | The `total` hash object.
+total.enabled | `boolean` | false | | Put the total value in the center of the chart. 
+total.label | `string` | Total | | Total label.
 
 ### Methods
 Method | Default | Description

@@ -453,8 +453,9 @@ function D3Pie (id, options) {
                 if (!firstSlice.empty()) firstSlice.classed("first-slice", true);
             })
             .catch((error) => {
-                // Interrupted transitions have data/index properties - ignore them, log real errors
-                if (error && typeof error === "object" && "data" in error && "index" in error) return;
+                // Interrupted transitions reject with pie state object - ignore these, log real errors
+                // Transition states have startAngle/endAngle properties from d3.pie() data
+                if (error && typeof error === "object" && "startAngle" in error && "endAngle" in error) return;
                 console.error("D3Pie error:", error);  // eslint-disable-line no-console
             });
 

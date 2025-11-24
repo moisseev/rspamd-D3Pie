@@ -380,11 +380,9 @@ function D3Pie (id, options) {
             .exit()
             .each(function (d) {
                 // Find by label instead of using exit selection index to avoid array corruption
-                const dataIndex = data.findIndex(function (item) { return item.label === d.data.label; });
-                // If not found, element was already removed from data - skip it
-                if (dataIndex !== -1) {
-                    data[dataIndex] = {value: 0, label: d.data.label};
-                }
+                const dataItem = data.find(function (item) { return item.label === d.data.label; });
+                // Set value to 0 to animate shrinking, preserving other properties (color, etc.)
+                if (dataItem) dataItem.value = 0;
             });
 
         pie(data).forEach(function (d, i) {

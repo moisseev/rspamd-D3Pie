@@ -9,10 +9,10 @@ function D3Pie (id, options) {
 
     // Validate ID to prevent CSS selector issues
     if (typeof id !== "string" || id.length === 0) throw new Error("D3Pie: id must be a non-empty string");
-    if ((/[\s.:#[\]()~>+,]/u).test(id)) {
-        throw new Error("D3Pie: id contains characters that are invalid in CSS selectors. " +
-            "Please use only alphanumeric characters, hyphens (-), and underscores (_). " +
-            "Got: \"" + id + "\"");
+    // Only allow: letters, underscores, hyphens at start; then any word chars or hyphens
+    if (!(/^[a-zA-Z_-][\w-]*$/u).test(id)) {
+        throw new Error("D3Pie: id must start with a letter, underscore, or hyphen, and contain only " +
+            "alphanumeric characters, hyphens (-), and underscores (_). Got: \"" + id + "\"");
     }
 
     const opts = $.extend(true, {

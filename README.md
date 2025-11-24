@@ -72,7 +72,7 @@ pie.destroy();
 **D3Pie**(_id_[, _options_])    
 is the chart constructor, which takes two parameters. 
 
-The first parameter is the **ID string** - must match an existing HTML element's `id` attribute. The ID must only contain alphanumeric characters, hyphens (`-`), and underscores (`_`). Special characters like dots, colons, brackets, or spaces are not allowed as they cause issues with CSS selectors.
+The first parameter is the **ID string** - must match an existing HTML element's `id` attribute. The ID must start with a letter, underscore, or hyphen, and contain only alphanumeric characters, hyphens (`-`), and underscores (`_`). Special characters and leading digits are not allowed as they cause issues with CSS selectors.
 
 The second parameter is an _options_ hash object.
 

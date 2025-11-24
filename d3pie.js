@@ -89,6 +89,37 @@ function D3Pie (id, options) {
     validate("size.canvasHeight", {min: 50});
     validate("size.canvasWidth", {min: 50});
 
+    // Validate radius options (can be number or percentage string)
+    function validateRadius (path) {
+        const keys = path.split(".");
+        let value = opts;
+        for (const key of keys) {
+            value = value[key];
+        }
+
+        // Allow number or percentage string
+        if (typeof value === "number") {
+            if (!isFinite(value) || value < 0) {
+                errors.push(path + " must be a non-negative number, got: " + value);
+            }
+        } else if (typeof value === "string") {
+            const match = (/^(?<pct>\d+)%$/u).exec(value);
+            if (!match) {
+                errors.push(path + " must be a number or percentage string (e.g. \"85%\"), got: " + value);
+            } else {
+                const percentage = parseInt(match.groups.pct, 10);
+                if (percentage > 99) {
+                    errors.push(path + " percentage must be 0-99, got: " + percentage + "%");
+                }
+            }
+        } else {
+            errors.push(path + " must be a number or percentage string, got: " + typeof value);
+        }
+    }
+
+    validateRadius("size.pieOuterRadius");
+    validateRadius("size.pieInnerRadius");
+
     if (errors.length > 0) throw new Error("D3Pie configuration errors:\n  - " + errors.join("\n  - "));
 
     this.destroy = function () {

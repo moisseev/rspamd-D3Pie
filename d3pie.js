@@ -281,15 +281,17 @@ function D3Pie (id, options) {
     this.data = function (arg) {
         let data = $.extend(true, [], arg);
 
-        // Validate that labels are unique (required for D3 keyed data binding)
+        // Validate that labels are unique and non-empty (required for D3 keyed data binding)
         const labels = new Set();
-        for (const item of data) {
-            if (item && item.label) {
-                if (labels.has(item.label)) {
-                    throw new Error("D3Pie: duplicate label \"" + item.label + "\" found. All labels must be unique.");
-                }
-                labels.add(item.label);
+        for (let i = 0; i < data.length; i += 1) {
+            const item = data[i];
+            if (!item || typeof item.label !== "string" || item.label === "") {
+                throw new Error("D3Pie: data[" + i + "] must have a non-empty string 'label' property");
             }
+            if (labels.has(item.label)) {
+                throw new Error("D3Pie: duplicate label \"" + item.label + "\" found. All labels must be unique.");
+            }
+            labels.add(item.label);
         }
 
         const nodes = [];

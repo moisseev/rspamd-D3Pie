@@ -127,8 +127,8 @@ function D3Pie (id, options) {
         const value = getOptionValue(path);
 
         if (!allowedValues.includes(value)) {
-            errors.push(path + " must be one of [" + allowedValues.map((v) => "\"" + v + "\"").join(", ") +
-                "], got: \"" + value + "\"");
+            const allowedStr = allowedValues.map((v) => "\"" + v + "\"").join(", ");
+            errors.push(path + " must be one of [" + allowedStr + "], got: \"" + value + "\"");
         }
     }
 

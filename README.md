@@ -122,7 +122,7 @@ Options details:
 Option | Type | Default | Valid Range | Description
 ---| --- | --- | --- | ---
 **canvasPadding** | `number` | 5 | ≥ 0 | Padding of the `svg` container in pixels.
-**cornerRadius** | `number` | 3 | ≥ 0 | Corner radius of a slice. Large values combined with large `padAngle` may cause visual artifacts in donut charts.
+**cornerRadius** | `number` | 3 | ≥ 0 | Corner radius of a slice.
 **duration**    | `number` | 1250 | ≥ 0 | Transition effects duration in milliseconds.
 **gradient**      | `hash` | | | The `gradient` hash object.
 gradient.enabled | `boolean` | true | | Add a gradient effect to the pie chart segments. 
@@ -133,7 +133,7 @@ labels.inner.offset | `number` | 0.15 | -1 to 1 | Offset of the inner labels fro
 labels.outer.collideHeight | `number` | 13 | ≥ 1 | Pixel height. Used by a collision detection, that prevents outer labels from overlapping.
 labels.outer.format | `string` | label | | `none` - hide outer labels, `label` - show segment labels. 
 labels.outer.pieDistance | `number` | 30 | ≥ 0 | The distance in pixels from the outside of the pie to the outer label. This also governs the length of the label links.
-**padAngle** | `number` | 0.01 | 0 to 2π | Angle of the pad between adjacent slices in radians. Large values combined with `cornerRadius` may cause visual artifacts in donut charts (a warning will be displayed).
+**padAngle** | `number` | 0.01 | 0 to 2π | Angle of the pad between adjacent slices in radians. Note: When a slice is larger than 50% and `padAngle` ≥ 1.0, the inner arc may wrap > 180° causing visual artifacts in donut charts. A mask prevents artifacts from showing through the center, but they may still be visible through gaps between other slices with extreme `padAngle` values.
 **pieCenterOffset** | `hash` | see description | | Fine-tune the position of the pie chart on the canvas. The default is `{x: 0, y: 0}`
 pieCenterOffset.x | `number` | 0 | any | Horizontal offset in pixels.
 pieCenterOffset.y | `number` | 0 | any | Vertical offset in pixels.

@@ -179,25 +179,6 @@ function D3Pie (id, options) {
 
     const labelRadius = outerRadius + opts.labels.outer.pieDistance;
 
-    // Validate padAngle doesn't cause visual artifacts with cornerRadius in donut charts
-    if (innerRadius > 0 && opts.padAngle > 0 && opts.cornerRadius > 0) {
-        const ringThickness = outerRadius - innerRadius;
-        // Worst case: 2 slices (50% each, maximum padding effect per slice)
-        // When padAngle is large, corners can extend into the donut hole
-        // Approximate safe limit: padAngle * innerRadius + cornerRadius < ringThickness
-        const effectivePadding = opts.padAngle * innerRadius + opts.cornerRadius;
-        if (effectivePadding > ringThickness) {
-            const maxSafePadAngle = Math.max(0, (ringThickness - opts.cornerRadius) / innerRadius);
-            const warnMsg = "D3Pie: Large padAngle (" + opts.padAngle.toFixed(3) +
-                ") combined with cornerRadius (" + opts.cornerRadius +
-                ") may cause visual artifacts in donut charts. " +
-                "Consider reducing padAngle to <= " + maxSafePadAngle.toFixed(3) +
-                " or reducing cornerRadius.";
-            // eslint-disable-next-line no-console
-            console.warn(warnMsg);
-        }
-    }
-
     const lineGenerator = d3.line()
         .curve(d3.curveCatmullRomOpen);
 
@@ -236,6 +217,9 @@ function D3Pie (id, options) {
             });
     }
 
+    // Slices render in this group (created first so totalG renders on top)
+    const slicesGroup = g.append("g");
+
     const totalG = g.append("g");
     attachListeners(totalG);
     totalG.append("circle")
@@ -254,6 +238,31 @@ function D3Pie (id, options) {
     }
 
     const defs = svg.append("defs");
+
+    // Mask to prevent color bleeding artifact in donut hole
+    // When padAngle is large and slice angle > π, the inner arc wraps > 180° and renders through center.
+    // This is D3's arc geometry behavior and cannot be fixed without changing the arc itself.
+    // Reproduces with: padAngle ≥ 1.0, slice percentage > 50%
+    // Note: With extreme padAngle values, artifacts may still be visible through gaps between other slices
+    if (innerRadius > 0) {
+        const mask = defs.append("mask")
+            .attr("id", id + "-donut-mask");
+        // White area = visible, black area = hidden
+        // Mask coordinates are relative to the masked element (slicesGroup is at 0,0 in transformed g)
+        mask.append("rect")
+            .attr("x", -opts.size.canvasWidth)
+            .attr("y", -opts.size.canvasHeight)
+            .attr("width", opts.size.canvasWidth * 2)
+            .attr("height", opts.size.canvasHeight * 2)
+            .attr("fill", "white");
+        // Black circle in center = hide slices there
+        mask.append("circle")
+            .attr("r", innerRadius)
+            .attr("fill", "black");
+
+        // Apply mask only to slicesGroup, not to totalG (so text remains visible)
+        slicesGroup.attr("mask", "url(#" + id + "-donut-mask)");
+    }
 
     this.data = function (arg) {
         let data = $.extend(true, [], arg);
@@ -345,7 +354,7 @@ function D3Pie (id, options) {
                     ? {dx: linkDistance, textAnchor: "start"}
                     : {dx: -linkDistance, textAnchor: "end"};
 
-                d3.select(g.selectAll(".link").nodes()[i])
+                d3.select(slicesGroup.selectAll(".link").nodes()[i])
                     .datum([
                         midpoint(interpolate(d)(t), outerRadius),
                         midpoint(interpolate(d)(t), outerRadius + linkDistance),
@@ -354,7 +363,7 @@ function D3Pie (id, options) {
                     ])
                     .attr("d", lineGenerator);
 
-                d3.select(g.selectAll(".outer-label").nodes()[i])
+                d3.select(slicesGroup.selectAll(".outer-label").nodes()[i])
                     .attr("dx", label.dx)
                     .style("text-anchor", label.textAnchor);
 
@@ -391,7 +400,7 @@ function D3Pie (id, options) {
             .sort(null)
             .value(function (d) { return d.value; });
 
-        const sliceG = g.selectAll(".slice-g").data(pie(data), key);
+        const sliceG = slicesGroup.selectAll(".slice-g").data(pie(data), key);
 
         const sliceGEnter = sliceG.enter().append("g")
             .attr("class", "slice-g");
@@ -432,7 +441,7 @@ function D3Pie (id, options) {
                 data = data.filter(function (d, i) { return (i === 0 || d.value); });
 
                 defs.selectAll("radialGradient").data(data, function (d) { return d.label; }).exit().remove();
-                g.selectAll(".slice-g").data(pie(data), key).exit()
+                slicesGroup.selectAll(".slice-g").data(pie(data), key).exit()
                     .each(function (d) {
                         delete currentData[d.data.label];
                         delete outerLabel[d.data.label];

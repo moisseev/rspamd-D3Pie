@@ -51,16 +51,22 @@ function D3Pie (id, options) {
         }
     }, options);
 
-    // Validate numeric options to prevent calculation errors
+    // Validate options to prevent calculation errors and silent failures
     const errors = [];
 
-    function validate (path, constraints) {
+    // Helper function to get nested option value by path
+    function getOptionValue (path) {
         const keys = path.split(".");
         let value = opts;
         for (const key of keys) {
             value = value[key];
         }
+        return value;
+    }
 
+    // Validate numeric options with min/max constraints
+    function validate (path, constraints) {
+        const value = getOptionValue(path);
         const num = parseFloat(value);
         if (!isFinite(num)) {
             errors.push(path + " must be a finite number, got: " + value);
@@ -91,11 +97,7 @@ function D3Pie (id, options) {
 
     // Validate radius options (can be number or percentage string)
     function validateRadius (path) {
-        const keys = path.split(".");
-        let value = opts;
-        for (const key of keys) {
-            value = value[key];
-        }
+        const value = getOptionValue(path);
 
         // Allow number or percentage string
         if (typeof value === "number") {
@@ -122,11 +124,7 @@ function D3Pie (id, options) {
 
     // Validate enum options
     function validateEnum (path, allowedValues) {
-        const keys = path.split(".");
-        let value = opts;
-        for (const key of keys) {
-            value = value[key];
-        }
+        const value = getOptionValue(path);
 
         if (!allowedValues.includes(value)) {
             errors.push(path + " must be one of [" + allowedValues.map((v) => "\"" + v + "\"").join(", ") +

@@ -446,7 +446,7 @@ function D3Pie (id, options) {
             }
         });
 
-        g.selectAll(".slice")
+        slicesGroup.selectAll(".slice")
             .data(pie(data), key)
             .transition(transition)
             .attrTween("d", arcTweenSlice)
@@ -471,8 +471,8 @@ function D3Pie (id, options) {
 
                 // Ensure exactly one element has the 'first-slice' class:
                 // remove from all, then set on the first .slice-g in DOM order.
-                g.selectAll(".slice-g").classed("first-slice", false);
-                const firstSlice = g.select(".slice-g");
+                slicesGroup.selectAll(".slice-g").classed("first-slice", false);
+                const firstSlice = slicesGroup.select(".slice-g");
                 if (!firstSlice.empty()) firstSlice.classed("first-slice", true);
             })
             .catch((error) => {
@@ -496,7 +496,7 @@ function D3Pie (id, options) {
             };
         }
 
-        g.selectAll(".inner-label").data(pie(data), key)
+        slicesGroup.selectAll(".inner-label").data(pie(data), key)
             .text(function (d) {
                 return (d.data.label === "undefined")
                     ? "undefined"
@@ -547,13 +547,13 @@ function D3Pie (id, options) {
             outerLabelsGEnter.append("path")
                 .attr("class", "link");
 
-            g.selectAll(".outer-label-g").data(pie(data), key)
+            slicesGroup.selectAll(".outer-label-g").data(pie(data), key)
                 .transition(transition)
                 .style("opacity", function (d, i) { return (i && d.value) ? 1 : 0; })
                 // eslint-disable-next-line no-invalid-this
                 .each(function (d, i) { $(this).children(".link").attr("stroke", pathColor(d.data, i)); });
 
-            g.selectAll(".outer-label").data(pie(data), key)
+            slicesGroup.selectAll(".outer-label").data(pie(data), key)
                 .transition(transition)
                 .attrTween("transform", arcTweenOuterlabel);
         }

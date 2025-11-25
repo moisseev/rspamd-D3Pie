@@ -120,6 +120,22 @@ function D3Pie (id, options) {
     validateRadius("size.pieOuterRadius");
     validateRadius("size.pieInnerRadius");
 
+    // Validate enum options
+    function validateEnum (path, allowedValues) {
+        const keys = path.split(".");
+        let value = opts;
+        for (const key of keys) {
+            value = value[key];
+        }
+
+        if (!allowedValues.includes(value)) {
+            errors.push(path + " must be one of [" + allowedValues.map((v) => "\"" + v + "\"").join(", ") +
+                "], got: \"" + value + "\"");
+        }
+    }
+
+    validateEnum("labels.outer.format", ["none", "label"]);
+
     if (errors.length > 0) throw new Error("D3Pie configuration errors:\n  - " + errors.join("\n  - "));
 
     this.destroy = function () {

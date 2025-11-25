@@ -131,7 +131,7 @@ gradient.percentage | `number` | 100 | 0-100 | Gradient stop offset percentage.
 labels.inner.hideWhenLessThanPercentage | `number` | 4 | 0-100 | Hide the inner label when the percentage is less than a certain amount. If set to `null`, never hide the labels. 
 labels.inner.offset | `number` | 0.15 | -1 to 1 | Offset of the inner labels from the center mass of the segment. The value is specified as a fraction of the distance between an arc and the segment center. Positive - to the outer arc, negative - to the inner arc.
 labels.outer.collideHeight | `number` | 13 | ≥ 1 | Pixel height. Used by a collision detection, that prevents outer labels from overlapping.
-labels.outer.format | `string` | label | | `none` - hide outer labels, `label` - show segment labels. 
+labels.outer.format | `string` | label | "none" or "label" | `none` - hide outer labels, `label` - show segment labels. 
 labels.outer.pieDistance | `number` | 30 | ≥ 0 | The distance in pixels from the outside of the pie to the outer label. This also governs the length of the label links.
 **padAngle** | `number` | 0.01 | 0 to 2π | Angle of the pad between adjacent slices in radians. Note: When a slice is larger than 50% and `padAngle` ≥ 1.0, the inner arc may wrap > 180° causing visual artifacts in donut charts. A mask prevents artifacts from showing through the center, but they may still be visible through gaps between other slices with extreme `padAngle` values.
 **pieCenterOffset** | `hash` | see description | | Fine-tune the position of the pie chart on the canvas. The default is `{x: 0, y: 0}`

@@ -281,6 +281,17 @@ function D3Pie (id, options) {
     this.data = function (arg) {
         let data = $.extend(true, [], arg);
 
+        // Validate that labels are unique (required for D3 keyed data binding)
+        const labels = new Set();
+        for (const item of data) {
+            if (item && item.label) {
+                if (labels.has(item.label)) {
+                    throw new Error("D3Pie: duplicate label \"" + item.label + "\" found. All labels must be unique.");
+                }
+                labels.add(item.label);
+            }
+        }
+
         const nodes = [];
 
         const total = data.reduce(function (a, b) {

@@ -11,6 +11,10 @@ In your page, include the `D3` and `jQuery` libraries. These can be placed anywh
 <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 ```
 
+### Browser Compatibility
+
+This library requires browser support for ES2018 features.
+
 ## Installing
 
 You can download files or load files directly from a CDN.

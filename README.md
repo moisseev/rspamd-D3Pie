@@ -159,6 +159,11 @@ Method | Default | Description
 
 ## Reading data
 
+**Requirements:**
+- Each item must have a unique, non-empty `label` property (string)
+- `value` should be a non-negative number
+- `color` is optional (defaults to color scheme)
+
 JSON dataset format:
 ```json
 [

@@ -1,5 +1,5 @@
 /*!
- * rspamd-D3Pie 1.1.2 (https://github.com/moisseev/rspamd-D3Pie)
+ * rspamd-D3Pie 1.2.0 (https://github.com/moisseev/rspamd-D3Pie)
  * Copyright (c) 2022, Alexander Moisseev, BSD 2-Clause
  */
 
@@ -15,7 +15,28 @@ function D3Pie (id, options) {
             "alphanumeric characters, hyphens (-), and underscores (_). Got: \"" + id + "\"");
     }
 
-    const opts = $.extend(true, {
+    // Recursively merge source into target, deep-cloning nested objects and arrays
+    function deepExtend (target, source) {
+        if (source === null || typeof source !== "object") {
+            return target;
+        }
+        Object.keys(source).forEach(function (key) {
+            const value = source[key];
+            let dst = target[key];
+            if (value && typeof value === "object") {
+                if (dst === null || typeof dst !== "object") {
+                    dst = Array.isArray(value) ? [] : {};
+                    target[key] = dst;
+                }
+                deepExtend(dst, value);
+            } else {
+                target[key] = value;
+            }
+        });
+        return target;
+    }
+
+    const opts = deepExtend({
         canvasPadding: 5,
         cornerRadius: 3,
         duration: 1250,
@@ -279,7 +300,7 @@ function D3Pie (id, options) {
     }
 
     this.data = function (arg) {
-        let data = $.extend(true, [], arg);
+        let data = deepExtend([], arg);
 
         // Validate that labels are unique and non-empty (required for D3 keyed data binding)
         const labels = new Set();
@@ -564,7 +585,7 @@ function D3Pie (id, options) {
                 .transition(transition)
                 .style("opacity", function (d, i) { return (i && d.value) ? 1 : 0; })
                 // eslint-disable-next-line no-invalid-this
-                .each(function (d, i) { $(this).children(".link").attr("stroke", pathColor(d.data, i)); });
+                .each(function (d, i) { d3.select(this).select(".link").attr("stroke", pathColor(d.data, i)); });
 
             slicesGroup.selectAll(".outer-label").data(pie(data), key)
                 .transition(transition)

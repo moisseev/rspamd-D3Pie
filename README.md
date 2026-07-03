@@ -5,10 +5,9 @@ Live demo is available at https://moisseev.github.io/rspamd-D3Pie/demo/
 
 ## Requirements
 
-In your page, include the `D3` and `jQuery` libraries. These can be placed anywhere:
+In your page, include the `D3` library. It can be placed anywhere:
 ```html
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 ```
 
 ### Browser Compatibility

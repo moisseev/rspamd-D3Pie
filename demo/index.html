@@ -9,7 +9,6 @@
     <link rel="stylesheet" type="text/css" href="demo.css" />
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="lib/visibility.min.js"></script>
     <script src="../d3pie.js"></script>
 </head>
@@ -135,7 +134,7 @@
                     label: action,
                     value: json.actions[action]
                 };
-                if ($("#color").val() === "dataset") {
+                if (document.getElementById("color").value === "dataset") {
                     datum.color = chartLegend.find(function (item) { return item.label === action; }).color;
                 }
                 data.push(datum);
@@ -145,20 +144,15 @@
     }
 
     window.getJSON = function (uri) {
-        $.ajax({
-            dataType: "json",
-            // Override the mime type as "text/xml" is implied for a local file
-            mimeType: "application/json",
-            url: uri
-        })
-            .done(function (json) {
+        d3.json(uri)
+            .then(function (json) {
                 getChart("left", json, chartConfig.left);
                 getChart("center", json, chartConfig.center);
                 getChart("right", json, chartConfig.right);
             })
-            .fail(function (jqXHR, textStatus, errorThrown) {
+            .catch(function (error) {
                 // eslint-disable-next-line no-console
-                console.warn(uri + " query " + textStatus + ": " + errorThrown);
+                console.warn(uri + " query failed: " + error);
             });
     };
     window.getJSON("data/stat1.json");
@@ -186,8 +180,8 @@
     }
 
     let timerId = auto();
-    $("#auto").click(function () {
-        if ($(this).is(":checked")) { // eslint-disable-line no-invalid-this
+    document.getElementById("auto").addEventListener("click", function () {
+        if (this.checked) { // eslint-disable-line no-invalid-this
             random();
             timerId = auto();
         } else {
